@@ -874,7 +874,7 @@ def set_goodbye(update, context) -> str:
 def reset_goodbye(update, context) -> str:
 	chat = update.effective_chat  # type: Optional[Chat]
 	user = update.effective_user  # type: Optional[User]
-	sql.set_custom_gdbye(chat.id, sql.DEFAULT_GOODBYE, sql.Types.TEXT)
+	sql.set_custom_gdbye(chat.id, False, False, sql.Types.TEXT)
 	send_message(update.effective_message, "Successfully reset goodbye message to default!")
 	return "<b>{}:</b>" \
 		   "\n#RESET_GOODBYE" \
