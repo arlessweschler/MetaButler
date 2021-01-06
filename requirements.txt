@@ -5,7 +5,7 @@ sqlalchemy
 python-telegram-bot==12.8
 psycopg2-binary
 feedparser
-pyowm
+pyowm==2.10.0
 googletrans
 wikipedia
 kbbi
