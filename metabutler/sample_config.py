@@ -1,10 +1,3 @@
-if not __name__.endswith("sample_config"):
-    import sys
-    print("The README is there to be read. Extend this sample config to a config file, don't just rename and change "
-          "values here. Doing that WILL backfire on you.\nBot quitting.", file=sys.stderr)
-    quit(1)
-
-
 # Create a new config.py file in same dir and import, then extend this class.
 class Config(object):
     LOGGER = True
@@ -22,6 +15,7 @@ class Config(object):
     WEBHOOK = False
     URL = None
     # OPTIONAL
+    GROUP_BLACKLIST = []
     SUDO_USERS = []  # List of id's (not usernames) for users which have sudo access to the bot.
     SUPPORT_USERS = []  # List of id's (not usernames) for users which are allowed to gban, but can also be banned.
     WHITELIST_USERS = []  # List of id's (not usernames) for users which WONT be banned/kicked by the bot.
