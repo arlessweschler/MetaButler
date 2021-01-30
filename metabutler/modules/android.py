@@ -170,7 +170,7 @@ def twrp(update, context):
 def magisk(update, context):
     url = 'https://raw.githubusercontent.com/topjohnwu/magisk_files/'
     releases = ""
-    for type, branch in {"Stable":["master/stable","master"], "Beta":["master/beta","master"], "Canary (release)":["canary/release","canary"], "Canary (debug)":["canary/debug","canary"]}.items():
+    for type, branch in {"Stable":["master/stable","master"], "Beta":["master/beta","master"], "Canary (release)":["canary/canary","canary"]}.items():
         data = get(url + branch[0] + '.json').json()
         releases += f'*{type}*: \n' \
                     f'• [Changelog](https://github.com/topjohnwu/magisk_files/blob/{branch[1]}/notes.md)\n' \
