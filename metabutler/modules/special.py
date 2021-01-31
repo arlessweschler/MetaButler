@@ -373,7 +373,8 @@ def slist(update, context):
 @run_async
 def github(update, context):
     message = update.effective_message
-    username = context.args
+    username = update.effective_message.text.split()[1]
+    print(username)
     request_url = f'https://api.github.com/users/{username}'
     response_url = requests.get(request_url).json()
     reply_text = None
