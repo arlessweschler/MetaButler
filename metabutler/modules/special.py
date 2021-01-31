@@ -370,6 +370,43 @@ def slist(update, context):
 #	jsondump = json.dumps(eventdict, indent=4)
 #	send_message(update.effective_message, jsondump)
 
+@run_async
+def github(update, context):
+    message = update.effective_message
+    username = context.args
+    request_url = f'https://api.github.com/users/{username}'
+    response_url = requests.get(request_url).json()
+    reply_text = None
+    photo_url = None
+    if response_url['login']:
+        if response_url['avatar_url']:
+            photo_url = response_url['avatar_url']
+        if response_url['html_url']:
+            reply_text = f"*Username:* [{username}]({response_url['html_url']})\n"
+        if response_url['type']:
+            reply_text += f"*Account Type:* `{response_url['type']}`\n"
+        if response_url['name']:
+            reply_text += f"*Name:* `{response_url['acc_name']}`\n"
+        if response_url['blog']:
+            reply_text += f"*Blog:* [Click Here]({response_url['blog']})\n"
+        if response_url['location']:
+            reply_text += f"*Location:* `{response_url['location']}`\n"
+        if response_url['bio']:
+            reply_text += f"*Bio:* `{response_url['bio']}`\n"
+        if response_url['public_repos']:
+            reply_text += f"*Public Repositories:* `{response_url['public_repos']}`\n"
+        if response_url['public_gists']:
+            reply_text += f"*Public Gists:* `{response_url['public_gists']}`\n"
+        if response_url['followers']:
+            reply_text += f"*Followers:* `{response_url['followers']}`\n"
+        if response_url['following']:
+            reply_text += f"*Following:* `{response_url['following']}`\n"
+        
+        if photo_url:
+            message.reply_photo(photo_url, caption=reply_text, parse_mode=ParseMode.MARKDOWN)
+    else:
+        reply_text = "GitHub user not found."
+    message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 __help__ = """
  - /wiki <text>: search for text written from the wikipedia source
@@ -378,6 +415,7 @@ __help__ = """
  - /getpaste: Get the content of a paste or shortened url from [dogbin](https://del.dog)
  - /pastestats: Get stats of a paste or shortened url from [dogbin](https://del.dog)
  - /tele <text> - as reply to a long message
+ - /git <username> - Get GitHub details of the username
 """
 
 __mod_name__ = "special"
@@ -391,6 +429,7 @@ GET_PASTE_HANDLER = DisableAbleCommandHandler("getpaste", get_paste_content, pas
 PASTE_STATS_HANDLER = DisableAbleCommandHandler("pastestats", get_paste_stats, pass_args=True)
 #LOG_HANDLER = DisableAbleCommandHandler("log", log, filters=Filters.user(OWNER_ID))
 SLIST_HANDLER = CommandHandler("slist", slist, filters=Filters.user(OWNER_ID))
+GITHUB_HANDLER = DisableAbleCommandHandler("git", github, admin_ok=True, pass_args=True)
 #eval_handler = CommandHandler('eval', evaluate, filters=Filters.user(OWNER_ID))
 #exec_handler = CommandHandler('py', execute, filters=Filters.user(OWNER_ID))
 #clear_handler = CommandHandler('clearlocals', clear, filters=Filters.user(OWNER_ID))
@@ -404,6 +443,7 @@ dispatcher.add_handler(SLIST_HANDLER)
 dispatcher.add_handler(PASTE_HANDLER)
 dispatcher.add_handler(GET_PASTE_HANDLER)
 dispatcher.add_handler(PASTE_STATS_HANDLER)
+dispatcher.add_handler(GITHUB_HANDLER)
 #dispatcher.add_handler(LOG_HANDLER)
 #dispatcher.add_handler(eval_handler)
 #dispatcher.add_handler(exec_handler)
