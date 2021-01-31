@@ -1,29 +1,28 @@
 import html
 import json
-import random
-from datetime import datetime
-from typing import Optional, List
-import time
 import locale
-
-import requests
-from telegram.error import BadRequest, Unauthorized
-from telegram import Message, Chat, Update, Bot, MessageEntity, InlineKeyboardMarkup
-from telegram import ParseMode
-from telegram.ext import CommandHandler, run_async, Filters
-from telegram.utils.helpers import escape_markdown, mention_html, mention_markdown
-
-from metabutler import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, WHITELIST_USERS, BAN_STICKER
-from metabutler.__main__ import STATS, USER_INFO
-from metabutler.modules.disable import DisableAbleCommandHandler
-from metabutler.modules.helper_funcs.extraction import extract_user
-from metabutler.modules.helper_funcs.filters import CustomFilters
-from metabutler.modules.helper_funcs.msg_types import get_message_type
-from metabutler.modules.helper_funcs.misc import build_keyboard_alternate
+import random
+import time
+from datetime import datetime
+from typing import List, Optional
 
 import metabutler.modules.sql.feds_sql as feds_sql
+import requests
+from metabutler import (BAN_STICKER, OWNER_ID, SUDO_USERS, SUPPORT_USERS,
+                        WHITELIST_USERS, dispatcher)
+from metabutler.__main__ import STATS, USER_INFO
+from metabutler.modules.disable import DisableAbleCommandHandler
 from metabutler.modules.helper_funcs.alternate import send_message
-
+from metabutler.modules.helper_funcs.extraction import extract_user
+from metabutler.modules.helper_funcs.filters import CustomFilters
+from metabutler.modules.helper_funcs.misc import build_keyboard_alternate
+from metabutler.modules.helper_funcs.msg_types import get_message_type
+from telegram import (Bot, Chat, InlineKeyboardMarkup, Message, MessageEntity,
+                      ParseMode, Update)
+from telegram.error import BadRequest, Unauthorized
+from telegram.ext import CommandHandler, Filters, run_async
+from telegram.utils.helpers import (escape_markdown, mention_html,
+                                    mention_markdown)
 
 MARKDOWN_HELP = """
 Markdown is a very powerful formatting tool supported by telegram. {} has some enhancements, to make sure that \
