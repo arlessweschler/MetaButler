@@ -28,6 +28,8 @@ from requests import get
 #LOGGER.info("android: Original Android Modules by @RealAkito on Telegram")
 DEVICES_DATA = 'https://raw.githubusercontent.com/androidtrackers/certified-android-devices/master/by_device.json'
 
+dload_text = "Click Here to Download"
+
 @run_async
 def shrp(update, context):
     chat_id = update.effective_chat.id
@@ -35,14 +37,12 @@ def shrp(update, context):
     args = update.message.text.split()
     if len(args) == 1:
         context.bot.send_message(chat_id, text="You need to provide a device codename", reply_to_message_id=msg_id)
-        return
     else:
         device = args[1]
         url = "https://sourceforge.net/projects/shrp/files/{0}/".format(device)
         request = get(url)
         if request.status_code == 404:
             context.bot.send_message(chat_id, "That device does not have a SHRP recovery released yet", reply_to_message_id=msg_id)
-            return
         elif request.status_code == 200:
             soup = BeautifulSoup(request.text, 'html.parser')
             file_tag = soup.find('tr', class_='file')
@@ -50,7 +50,7 @@ def shrp(update, context):
             dl_link = file_tag.find('th', headers='files_name_h').find('a').get('href')
             date = file_tag.find('td', headers='files_date_h').find('abbr').get('title')
             size = file_tag.find('td', headers='files_size_h').text
-            keyboard = [[InlineKeyboardButton("Click Here to Download", dl_link)]]
+            keyboard = [[InlineKeyboardButton(dload_text, dl_link)]]
             text = "<b>File Name - </b> {0}\n".format(file_name)
             text += "<b>File Size - </b> {0}\n".format(size)
             text += "<b>Date Uploaded - </b> {0}".format(date)
@@ -80,7 +80,7 @@ def bliss(update, context):
             size = ("%.2f"%size)
             version = device_info['version']
             dl_link = "https://sourceforge.net/projects/blissroms/files/Q" + device_info['filepath']
-            keyboard = [[InlineKeyboardButton("Click Here to Download", dl_link)]]
+            keyboard = [[InlineKeyboardButton(dload_text, dl_link)]]
             text = "<b>Build Date -</b> {0}\n".format(build_date)
             text += '<b>File Name -</b> <a href="{0}">{1}</a>\n'.format(dl_link, filename)
             text += "<b>SHA256 -</b> {0}\n".format(sha256)
@@ -162,7 +162,7 @@ def twrp(update, context):
             dl_link = f"https://eu.dl.twrp.me{download['href']}"
             dl_file = download.text
             size = trs[i].find("span", {"class": "filesize"}).text
-        keyboard = [[InlineKeyboardButton("Click Here to Download", dl_link)]]
+        keyboard = [[InlineKeyboardButton(dload_text, dl_link)]]
         send_message(update.effective_message, "{}".format(reply), parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(keyboard), disable_web_page_preview=True)
 
 
@@ -222,7 +222,7 @@ def havoc(update, context):
         reply_text += "*Version:* `{}`\n".format(version)
 
         keyboard = [[
-            InlineKeyboardButton(text="Click here to Download", url=f"{url}")
+            InlineKeyboardButton(text=dload_text, url=f"{url}")
         ]]
         send_message(update.effective_message, reply_text,
                            reply_markup=InlineKeyboardMarkup(keyboard),
@@ -400,7 +400,7 @@ def los(update, context):
         reply_text += "*Version:* `{}`\n".format(version)
 
         keyboard = [[
-            InlineKeyboardButton(text="Click here to Download", url=f"{url}")
+            InlineKeyboardButton(text=dload_text, url=f"{url}")
         ]]
         send_message(update.effective_message, reply_text,
                            reply_markup=InlineKeyboardMarkup(keyboard),
@@ -451,7 +451,7 @@ def evo(update, context):
 
         keyboard = [[
             InlineKeyboardButton(
-                text="Click here to Download",
+                text=dload_text,
                 url="https://sourceforge.net/projects/evolution-x/files/GSI/")
         ]]
         send_message(update.effective_message, reply_text,
@@ -478,7 +478,7 @@ def evo(update, context):
                 f"[{maintainer}](https://t.me/{maintainer_url})")
 
             keyboard = [[
-                InlineKeyboardButton(text="Click here to Download", url=f"{url}")
+                InlineKeyboardButton(text=dload_text, url=f"{url}")
             ]]
             send_message(update.effective_message, reply_text,
                                reply_markup=InlineKeyboardMarkup(keyboard),
@@ -588,11 +588,12 @@ def bootleggers(update, context):
                        parse_mode=ParseMode.MARKDOWN,
                        disable_web_page_preview=True)
 
-"""- /ofox <codename> - Get the latest stable Orangefox Recovery download link using the codename"""
+"""- /ofox <codename> - Get the latest stable Orangefox Recovery download link using the codename
+*Orangefox code added with love by* @AgileArchon
+"""
 
 __help__ = """
 *This module is made with love by* @peaktogoo *and code beauty by* @kandnub
-*Orangefox code added with love by* @AgileArchon
  *Device Specific Rom*
  - /magisk - gets the latest magisk release for Stable/Beta/Canary
  - /twrp <codename> -  gets latest twrp for the android device using the codename
