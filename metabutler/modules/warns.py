@@ -509,7 +509,7 @@ def list_warn_filters(update, context):
     for keyword in all_handlers:
         entry = " • `{}`\n".format(html.escape(keyword))
         if len(entry) + len(filter_list) > telegram.MAX_MESSAGE_LENGTH:
-            send_message(update.effective_message, filter_list, parse_mode=telegram.ParseMode.HTML)
+            send_message(update.effective_message, filter_list, parse_mode=ParseMode.HTML)
             filter_list = entry
         else:
             filter_list += entry
