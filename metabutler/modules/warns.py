@@ -1,28 +1,35 @@
 import html
 import re
-from typing import Optional, List
+from typing import List, Optional
 
+import metabutler.modules.sql.rules_sql as rules_sql
 import telegram
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, User, CallbackQuery
-from telegram import Message, Chat, Update, Bot
-from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async, DispatcherHandlerStop, MessageHandler, Filters, CallbackQueryHandler
-from telegram.utils.helpers import mention_html, escape_markdown
-
-from metabutler import dispatcher, BAN_STICKER, OWNER_ID
+from metabutler import BAN_STICKER, OWNER_ID, dispatcher
+from metabutler.modules.connection import connected
 from metabutler.modules.disable import DisableAbleCommandHandler
-from metabutler.modules.helper_funcs.chat_status import is_user_admin, bot_admin, user_admin_no_reply, user_admin, \
-    can_restrict, is_user_ban_protected
-from metabutler.modules.helper_funcs.extraction import extract_text, extract_user_and_text, extract_user
+from metabutler.modules.helper_funcs.alternate import (send_message,
+                                                       send_message_raw)
+from metabutler.modules.helper_funcs.chat_status import (bot_admin,
+                                                         can_restrict,
+                                                         is_user_admin,
+                                                         is_user_ban_protected,
+                                                         user_admin,
+                                                         user_admin_no_reply)
+from metabutler.modules.helper_funcs.extraction import (extract_text,
+                                                        extract_user,
+                                                        extract_user_and_text)
 from metabutler.modules.helper_funcs.filters import CustomFilters
 from metabutler.modules.helper_funcs.misc import split_message
 from metabutler.modules.helper_funcs.string_handling import split_quotes
 from metabutler.modules.log_channel import loggable
 from metabutler.modules.sql import warns_sql as sql
-import metabutler.modules.sql.rules_sql as rules_sql
-from metabutler.modules.connection import connected
-
-from metabutler.modules.helper_funcs.alternate import send_message, send_message_raw
+from telegram import (Bot, CallbackQuery, Chat, InlineKeyboardButton,
+                      InlineKeyboardMarkup, Message, ParseMode, Update, User)
+from telegram.error import BadRequest
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          DispatcherHandlerStop, Filters, MessageHandler,
+                          run_async)
+from telegram.utils.helpers import escape_markdown, mention_html
 
 WARN_HANDLER_GROUP = 9
 
@@ -31,7 +38,7 @@ WARN_HANDLER_GROUP = 9
 def warn(user: User, chat: Chat, reason: str, message: Message, warner: User = None, conn=False) -> str:
     bot = dispatcher.bot
     if is_user_admin(chat, user.id):
-        send_message(update.effective_message, "this is admin of this group")
+        message.reply_text(chat.id, "This is an admin of this group, not warning!")
         return ""
 
     if warner:
