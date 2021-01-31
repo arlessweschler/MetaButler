@@ -378,29 +378,29 @@ def github(update, context):
     response_url = requests.get(request_url).json()
     reply_text = None
     photo_url = None
-    if response_url['login']:
-        if response_url['avatar_url']:
-            photo_url = response_url['avatar_url']
-        if response_url['html_url']:
-            reply_text = f"*Username:* [{username}]({response_url['html_url']})\n"
-        if response_url['type']:
-            reply_text += f"*Account Type:* `{response_url['type']}`\n"
-        if response_url['name']:
-            reply_text += f"*Name:* `{response_url['acc_name']}`\n"
-        if response_url['blog']:
-            reply_text += f"*Blog:* [Click Here]({response_url['blog']})\n"
-        if response_url['location']:
-            reply_text += f"*Location:* `{response_url['location']}`\n"
-        if response_url['bio']:
-            reply_text += f"*Bio:* `{response_url['bio']}`\n"
-        if response_url['public_repos']:
-            reply_text += f"*Public Repositories:* `{response_url['public_repos']}`\n"
-        if response_url['public_gists']:
-            reply_text += f"*Public Gists:* `{response_url['public_gists']}`\n"
-        if response_url['followers']:
-            reply_text += f"*Followers:* `{response_url['followers']}`\n"
-        if response_url['following']:
-            reply_text += f"*Following:* `{response_url['following']}`\n"
+    if response_url.get('login'):
+        if response_url.get('avatar_url'):
+            photo_url = response_url.get('avatar_url')
+        if response_url.get('html_url'):
+            reply_text = f"*Username:* [{username}]({response_url.get('html_url')})\n"
+        if response_url.get('type'):
+            reply_text += f"*Account Type:* `{response_url.get('type')}`\n"
+        if response_url.get('name'):
+            reply_text += f"*Name:* `{response_url.get('acc_name')}`\n"
+        if response_url.get('blog'):
+            reply_text += f"*Blog:* [Click Here]({response_url.get('blog')})\n"
+        if response_url.get('location'):
+            reply_text += f"*Location:* `{response_url.get('location')}`\n"
+        if response_url.get('bio'):
+            reply_text += f"*Bio:* `{response_url.get('bio')}`\n"
+        if response_url.get('public_repos'):
+            reply_text += f"*Public Repositories:* `{response_url.get('public_repos')}`\n"
+        if response_url.get('public_gists'):
+            reply_text += f"*Public Gists:* `{response_url.get('public_gists')}`\n"
+        if response_url.get('followers'):
+            reply_text += f"*Followers:* `{response_url.get('followers')}`\n"
+        if response_url.get('following'):
+            reply_text += f"*Following:* `{response_url.get('following')}`\n"
         
         if photo_url:
             message.reply_photo(photo_url, caption=reply_text, parse_mode=ParseMode.MARKDOWN)
