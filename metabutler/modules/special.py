@@ -373,41 +373,47 @@ def slist(update, context):
 @run_async
 def github(update, context):
     message = update.effective_message
-    username = update.effective_message.text.split()[1]
-    print(username)
-    request_url = f'https://api.github.com/users/{username}'
-    response_url = requests.get(request_url).json()
-    reply_text = None
-    photo_url = None
-    if response_url.get('login'):
-        if response_url.get('avatar_url'):
-            photo_url = response_url.get('avatar_url')
-        if response_url.get('html_url'):
-            reply_text = f"*Username:* [{username}]({response_url.get('html_url')})\n"
-        if response_url.get('type'):
-            reply_text += f"*Account Type:* `{response_url.get('type')}`\n"
-        if response_url.get('name'):
-            reply_text += f"*Name:* `{response_url.get('acc_name')}`\n"
-        if response_url.get('blog'):
-            reply_text += f"*Blog:* [Click Here]({response_url.get('blog')})\n"
-        if response_url.get('location'):
-            reply_text += f"*Location:* `{response_url.get('location')}`\n"
-        if response_url.get('bio'):
-            reply_text += f"*Bio:* `{response_url.get('bio')}`\n"
-        if response_url.get('public_repos'):
-            reply_text += f"*Public Repositories:* `{response_url.get('public_repos')}`\n"
-        if response_url.get('public_gists'):
-            reply_text += f"*Public Gists:* `{response_url.get('public_gists')}`\n"
-        if response_url.get('followers'):
-            reply_text += f"*Followers:* `{response_url.get('followers')}`\n"
-        if response_url.get('following'):
-            reply_text += f"*Following:* `{response_url.get('following')}`\n"
-        
-        if photo_url:
-            message.reply_photo(photo_url, caption=reply_text, parse_mode=ParseMode.MARKDOWN)
+    if len(message.text.split()) < 2:
+        reply_text = "You need to provide an username to query for duh!"
+        message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
     else:
-        reply_text = "GitHub user not found."
-    message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+        username = update.effective_message.text.split()[1]
+        print(username)
+        request_url = f'https://api.github.com/users/{username}'
+        response_url = requests.get(request_url).json()
+        reply_text = None
+        photo_url = None
+        if response_url.get('login'):
+            if response_url.get('avatar_url'):
+                photo_url = response_url.get('avatar_url')
+            if response_url.get('html_url'):
+                reply_text = f"*Username:* [{username}]({response_url.get('html_url')})\n"
+            if response_url.get('type'):
+                reply_text += f"*Account Type:* `{response_url.get('type')}`\n"
+            if response_url.get('name'):
+                reply_text += f"*Name:* `{response_url.get('acc_name')}`\n"
+            if response_url.get('blog'):
+                reply_text += f"*Blog:* [Click Here]({response_url.get('blog')})\n"
+            if response_url.get('location'):
+                reply_text += f"*Location:* `{response_url.get('location')}`\n"
+            if response_url.get('bio'):
+                reply_text += f"*Bio:* `{response_url.get('bio')}`\n"
+            if response_url.get('public_repos'):
+                reply_text += f"*Public Repositories:* `{response_url.get('public_repos')}`\n"
+            if response_url.get('public_gists'):
+                reply_text += f"*Public Gists:* `{response_url.get('public_gists')}`\n"
+            if response_url.get('followers'):
+                reply_text += f"*Followers:* `{response_url.get('followers')}`\n"
+            if response_url.get('following'):
+                reply_text += f"*Following:* `{response_url.get('following')}`\n"
+            
+            if photo_url:
+                message.reply_photo(photo_url, caption=reply_text, parse_mode=ParseMode.MARKDOWN)
+            else:
+                message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+        else:
+            reply_text = "GitHub user not found."
+            message.reply_text(reply_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 __help__ = """
  - /wiki <text>: search for text written from the wikipedia source
