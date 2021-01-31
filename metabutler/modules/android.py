@@ -1,21 +1,20 @@
+import html
 import json
-import html, time
-from bs4 import BeautifulSoup
+import time
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
+from bs4 import BeautifulSoup
 from hurry.filesize import size as sizee
-
-from telegram import Message, Chat, Update, Bot, ParseMode
-from telegram.error import BadRequest
-from telegram.utils.helpers import escape_markdown, mention_html
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import run_async
-
-from metabutler import dispatcher, LOGGER
+from metabutler import LOGGER, dispatcher
 from metabutler.modules.disable import DisableAbleCommandHandler
 from metabutler.modules.helper_funcs.alternate import send_message
-
 from requests import get
+from telegram import (Bot, Chat, InlineKeyboardButton, InlineKeyboardMarkup,
+                      Message, ParseMode, Update)
+from telegram.error import BadRequest
+from telegram.ext import run_async
+from telegram.utils.helpers import escape_markdown, mention_html
 
 # Greeting all bot owners that is using this module,
 # - RealAkito (used to be peaktogoo) [Module Maker]
@@ -65,7 +64,6 @@ def bliss(update, context):
     args = update.message.text.split()
     if len(args) == 1:
         context.bot.send_message(chat_id, text="You need to provide a device codename", reply_to_message_id=msg_id)
-        return
     else:
         device = args[1].lower()
         url = "https://raw.githubusercontent.com/BlissRoms-Devices/OTA/master/builds.json"
@@ -90,53 +88,11 @@ def bliss(update, context):
         else:
             context.bot.send_message(chat_id, text="That device {0} does not have official BlissOS".format(device), reply_to_message_id=msg_id)
 
-# @run_async
-# def ofox(update, context):
-#     args = update.message.text.split()
-#     if len(args) == 0:
-#         reply = 'No codename provided, write a codename for fetching informations.'
-#         del_msg = send_message(update.effective_message, "{}".format(reply), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-#         return
-#     device = str(args[1])
-#     url = get("https://api.orangefox.download/v2/device/{}".format(device))
-#     if url.status_code == 404:
-#         reply = "Couldn't find Orangefox downloads for {}!\n".format(device)
-#         send_message(update.effective_message, "{}".format(reply))
-#     else:
-#         reply = "<b>Latest Stable Orangefox for {0}</b>\n".format(device)
-#         url = get(f'https://api.orangefox.download/v2/device/{device}/releases/stable/last').json()
-#         try:
-#             bugs = url['bugs']
-#         except Exception:
-#             bugs = None
-#         try:
-#             notes = url['notes']
-#         except Exception:
-#             notes = None
-#         changelog = url['changelog']
-#         buildate = url['date']
-#         md5 = url['md5']
-#         size = url['size_human']
-#         link = url['url']
-#         version = url['version']
-#         if bugs is not None:
-#             reply += "<b>Bugs - </b> {0}\n".format(bugs)
-#         reply += "<b>Changelog - </b> {0}\n".format(changelog)
-#         reply += "<b>Build Date - </b> {0}\n".format(buildate)
-#         if notes is not None:
-#             reply += "<b>Notes - </b> {0}\n".format(notes)
-#         reply += "<b>MD5 - </b> {0}\n".format(md5)
-#         reply += "<b>Size - </b> {0}\n".format(size)
-#         reply += "<b>Version - </b> {0}\n".format(version)
-#         keyboard = [[InlineKeyboardButton("Click Here to Download", link)]]
-#         send_message(update.effective_message, "{}".format(reply), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard), disable_web_page_preview=True)
-
 @run_async
 def twrp(update, context):
     args = context.args
     if len(args) == 0:
         reply = "No codename provided, write a codename for fetching informations."
-        del_msg = send_message(update.effective_message, "{}".format(reply))
     device = " ".join(args)
     url = get(f'https://eu.dl.twrp.me/{device}/')
     if url.status_code == 404:
@@ -150,18 +106,17 @@ def twrp(update, context):
             brand = db[newdevice][0]['brand']
             name = db[newdevice][0]['name']
             reply += f'*{brand} - {name}*\n'
-        except KeyError as err:
+        except KeyError:
             pass
         page = BeautifulSoup(url.content, 'lxml')
         date = page.find("em").text.strip()
         reply += f'*Updated:* {date}\n'
         trs = page.find('table').find_all('tr')
         row = 2 if trs[0].find('a').text.endswith('tar') else 1
+        dl_link = None
         for i in range(row):
             download = trs[i].find('a')
             dl_link = f"https://eu.dl.twrp.me{download['href']}"
-            dl_file = download.text
-            size = trs[i].find("span", {"class": "filesize"}).text
         keyboard = [[InlineKeyboardButton(dload_text, dl_link)]]
         send_message(update.effective_message, "{}".format(reply), parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(keyboard), disable_web_page_preview=True)
 
@@ -194,8 +149,9 @@ def magisk(update, context):
 def havoc(update, context):
     cmd_name = "havoc"
     message = update.effective_message
-    chat = update.effective_chat  # type: Optional[Chat]
     device = message.text[len(f'/{cmd_name} '):]
+
+    reply_text = None
 
     fetch = get(
         f'https://raw.githubusercontent.com/Havoc-Devices/android_vendor_OTA/pie/{device}.json'
@@ -243,6 +199,8 @@ def pixys(update, context):
     message = update.effective_message
     device = message.text[len('/pixys '):]
 
+    reply_text = None
+
     if device == '':
         reply_text = "Please type your device **codename** into it!\nFor example, `/pixys tissot`"
         send_message(update.effective_message, reply_text, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
@@ -264,7 +222,7 @@ def pixys(update, context):
                       f"*Version:* `{version}`\n"
                       f"*Rom Type:* `{romtype}`")
 
-        keyboard = [[InlineKeyboardButton(text="Click to Download", url=f"{url}")]]
+        keyboard = [[InlineKeyboardButton(text=dload_text, url=f"{url}")]]
         send_message(update.effective_message, reply_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
 
@@ -277,6 +235,8 @@ def pixys(update, context):
 def dotos(update, context):
     message = update.effective_message
     device = message.text[len('/dotos '):]
+
+    reply_text = None
 
     if device == '':
         reply_text = "Please type your device **codename** into it!\nFor example, `/dotos tissot`"
@@ -299,7 +259,7 @@ def dotos(update, context):
                       f"*Version:* `{version}`\n"
                       f"*Device Changelog:* `{changelog}`")
 
-        keyboard = [[InlineKeyboardButton(text="Click to Download", url=f"{url}")]]
+        keyboard = [[InlineKeyboardButton(text=dload_text, url=f"{url}")]]
         send_message(update.effective_message, reply_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
 
@@ -312,6 +272,8 @@ def dotos(update, context):
 def viper(update, context):
     message = update.effective_message
     device = message.text[len('/viper '):]
+
+    reply_text = None
 
     if device == '':
         reply_text = "Please type your device **codename** into it!\nFor example, `/viper tissot`"
@@ -332,7 +294,7 @@ def viper(update, context):
                       f"*Build size:* `{buildsize_b}`\n"
                       f"*Version:* `{version}`")
 
-        keyboard = [[InlineKeyboardButton(text="Click to Download", url=f"{url}")]]
+        keyboard = [[InlineKeyboardButton(text=dload_text, url=f"{url}")]]
         send_message(update.effective_message, reply_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
 
@@ -342,8 +304,6 @@ def viper(update, context):
 
 
 def enesrelease(update, context):
-    args = context.args
-    message = update.effective_message
     usr = get(f'https://api.github.com/repos/EnesSastim/Downloads/releases/latest').json()
     reply_text = "*Enes Sastim's lastest upload(s)*\n"
     for i in range(len(usr)):
@@ -357,8 +317,6 @@ def enesrelease(update, context):
 
 
 def descendant(update, context):
-    args = context.args
-    message = update.effective_message
     usr = get(f'https://api.github.com/repos/Descendant/InOps/releases/latest').json()
     reply_text = "*Descendant GSI Download(s)*\n"
     for i in range(len(usr)):
@@ -375,7 +333,6 @@ def descendant(update, context):
 def los(update, context):
     cmd_name = "los"
     message = update.effective_message
-    chat = update.effective_chat  # type: Optional[Chat]
     device = message.text[len(f'/{cmd_name} '):]
 
     if device == '':
@@ -419,7 +376,6 @@ def los(update, context):
 def evo(update, context):
     cmd_name = "evo"
     message = update.effective_message
-    chat = update.effective_chat  # type: Optional[Chat]
     device = message.text[len(f'/{cmd_name} '):]
 
     if device == "example":
@@ -498,15 +454,10 @@ def evo(update, context):
         send_message(update.effective_message, reply_text,
                            parse_mode=ParseMode.MARKDOWN,
                            disable_web_page_preview=True)
-        return
 
 
 def phh(update, context):
-    args = context.args
     romname = "Phh's"
-    message = update.effective_message
-    chat = update.effective_chat  # type: Optional[Chat]
-
     usr = get(
         f'https://api.github.com/repos/phhusson/treble_experimentations/releases/latest'
     ).json()
@@ -525,7 +476,6 @@ def phh(update, context):
 def bootleggers(update, context):
     cmd_name = "bootleggers"
     message = update.effective_message
-    chat = update.effective_chat  # type: Optional[Chat]
     codename = message.text[len(f'/{cmd_name} '):]
 
     if codename == '':
@@ -534,6 +484,8 @@ def bootleggers(update, context):
                            parse_mode=ParseMode.MARKDOWN,
                            disable_web_page_preview=True)
         return
+    
+    reply_text = None
 
     fetch = get('https://bootleggersrom-devices.github.io/api/devices.json')
     if fetch.status_code == 200:
@@ -617,7 +569,6 @@ EVO_HANDLER = DisableAbleCommandHandler("evo", evo, admin_ok=True)
 MAGISK_HANDLER = DisableAbleCommandHandler("magisk", magisk)
 BLISS_HANDLER = DisableAbleCommandHandler("bliss", bliss, pass_args=True)
 TWRP_HANDLER = DisableAbleCommandHandler("twrp", twrp, pass_args=True)
-# OFOX_HANDLER = DisableAbleCommandHandler("ofox", ofox, pass_args=True)
 SHRP_HANDLER = DisableAbleCommandHandler("shrp", shrp, pass_args=True)
 DOTOS_HANDLER = DisableAbleCommandHandler("dotos", dotos, admin_ok=True)
 PIXYS_HANDLER = DisableAbleCommandHandler("pixys", pixys, admin_ok=True)
@@ -637,7 +588,6 @@ BOOTLEGGERS_HANDLER = DisableAbleCommandHandler("bootleggers",
 dispatcher.add_handler(EVO_HANDLER)
 dispatcher.add_handler(MAGISK_HANDLER)
 dispatcher.add_handler(TWRP_HANDLER)
-# dispatcher.add_handler(OFOX_HANDLER)
 dispatcher.add_handler(SHRP_HANDLER)
 dispatcher.add_handler(BLISS_HANDLER)
 dispatcher.add_handler(HAVOC_HANDLER)
