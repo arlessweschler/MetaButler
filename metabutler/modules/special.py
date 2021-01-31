@@ -391,7 +391,7 @@ def github(update, context):
             if response_url.get('type'):
                 reply_text += f"*Account Type:* `{response_url.get('type')}`\n"
             if response_url.get('name'):
-                reply_text += f"*Name:* `{response_url.get('acc_name')}`\n"
+                reply_text += f"*Name:* `{response_url.get('name')}`\n"
             if response_url.get('blog'):
                 reply_text += f"*Blog:* [Click Here]({response_url.get('blog')})\n"
             if response_url.get('location'):
