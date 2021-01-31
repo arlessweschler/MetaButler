@@ -90,46 +90,46 @@ def bliss(update, context):
         else:
             context.bot.send_message(chat_id, text="That device {0} does not have official BlissOS".format(device), reply_to_message_id=msg_id)
 
-@run_async
-def ofox(update, context):
-    args = update.message.text.split()
-    if len(args) == 0:
-        reply = 'No codename provided, write a codename for fetching informations.'
-        del_msg = send_message(update.effective_message, "{}".format(reply), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-        return
-    device = str(args[1])
-    url = get("https://api.orangefox.download/v2/device/{}".format(device))
-    if url.status_code == 404:
-        reply = "Couldn't find Orangefox downloads for {}!\n".format(device)
-        send_message(update.effective_message, "{}".format(reply))
-    else:
-        reply = "<b>Latest Stable Orangefox for {0}</b>\n".format(device)
-        url = get(f'https://api.orangefox.download/v2/device/{device}/releases/stable/last').json()
-        try:
-            bugs = url['bugs']
-        except Exception:
-            bugs = None
-        try:
-            notes = url['notes']
-        except Exception:
-            notes = None
-        changelog = url['changelog']
-        buildate = url['date']
-        md5 = url['md5']
-        size = url['size_human']
-        link = url['url']
-        version = url['version']
-        if bugs is not None:
-            reply += "<b>Bugs - </b> {0}\n".format(bugs)
-        reply += "<b>Changelog - </b> {0}\n".format(changelog)
-        reply += "<b>Build Date - </b> {0}\n".format(buildate)
-        if notes is not None:
-            reply += "<b>Notes - </b> {0}\n".format(notes)
-        reply += "<b>MD5 - </b> {0}\n".format(md5)
-        reply += "<b>Size - </b> {0}\n".format(size)
-        reply += "<b>Version - </b> {0}\n".format(version)
-        keyboard = [[InlineKeyboardButton("Click Here to Download", link)]]
-        send_message(update.effective_message, "{}".format(reply), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard), disable_web_page_preview=True)
+# @run_async
+# def ofox(update, context):
+#     args = update.message.text.split()
+#     if len(args) == 0:
+#         reply = 'No codename provided, write a codename for fetching informations.'
+#         del_msg = send_message(update.effective_message, "{}".format(reply), parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+#         return
+#     device = str(args[1])
+#     url = get("https://api.orangefox.download/v2/device/{}".format(device))
+#     if url.status_code == 404:
+#         reply = "Couldn't find Orangefox downloads for {}!\n".format(device)
+#         send_message(update.effective_message, "{}".format(reply))
+#     else:
+#         reply = "<b>Latest Stable Orangefox for {0}</b>\n".format(device)
+#         url = get(f'https://api.orangefox.download/v2/device/{device}/releases/stable/last').json()
+#         try:
+#             bugs = url['bugs']
+#         except Exception:
+#             bugs = None
+#         try:
+#             notes = url['notes']
+#         except Exception:
+#             notes = None
+#         changelog = url['changelog']
+#         buildate = url['date']
+#         md5 = url['md5']
+#         size = url['size_human']
+#         link = url['url']
+#         version = url['version']
+#         if bugs is not None:
+#             reply += "<b>Bugs - </b> {0}\n".format(bugs)
+#         reply += "<b>Changelog - </b> {0}\n".format(changelog)
+#         reply += "<b>Build Date - </b> {0}\n".format(buildate)
+#         if notes is not None:
+#             reply += "<b>Notes - </b> {0}\n".format(notes)
+#         reply += "<b>MD5 - </b> {0}\n".format(md5)
+#         reply += "<b>Size - </b> {0}\n".format(size)
+#         reply += "<b>Version - </b> {0}\n".format(version)
+#         keyboard = [[InlineKeyboardButton("Click Here to Download", link)]]
+#         send_message(update.effective_message, "{}".format(reply), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard), disable_web_page_preview=True)
 
 @run_async
 def twrp(update, context):
@@ -588,6 +588,7 @@ def bootleggers(update, context):
                        parse_mode=ParseMode.MARKDOWN,
                        disable_web_page_preview=True)
 
+"""- /ofox <codename> - Get the latest stable Orangefox Recovery download link using the codename"""
 
 __help__ = """
 *This module is made with love by* @peaktogoo *and code beauty by* @kandnub
@@ -595,7 +596,6 @@ __help__ = """
  *Device Specific Rom*
  - /magisk - gets the latest magisk release for Stable/Beta/Canary
  - /twrp <codename> -  gets latest twrp for the android device using the codename
- - /ofox <codename> - Get the latest stable Orangefox Recovery download link using the codename
  - /havoc <device>: Get the Havoc Rom
  - /viper <device>: Get the Viper Rom
  - /evo <device>: Get the Evolution X Rom
@@ -616,7 +616,7 @@ EVO_HANDLER = DisableAbleCommandHandler("evo", evo, admin_ok=True)
 MAGISK_HANDLER = DisableAbleCommandHandler("magisk", magisk)
 BLISS_HANDLER = DisableAbleCommandHandler("bliss", bliss, pass_args=True)
 TWRP_HANDLER = DisableAbleCommandHandler("twrp", twrp, pass_args=True)
-OFOX_HANDLER = DisableAbleCommandHandler("ofox", ofox, pass_args=True)
+# OFOX_HANDLER = DisableAbleCommandHandler("ofox", ofox, pass_args=True)
 SHRP_HANDLER = DisableAbleCommandHandler("shrp", shrp, pass_args=True)
 DOTOS_HANDLER = DisableAbleCommandHandler("dotos", dotos, admin_ok=True)
 PIXYS_HANDLER = DisableAbleCommandHandler("pixys", pixys, admin_ok=True)
@@ -636,7 +636,7 @@ BOOTLEGGERS_HANDLER = DisableAbleCommandHandler("bootleggers",
 dispatcher.add_handler(EVO_HANDLER)
 dispatcher.add_handler(MAGISK_HANDLER)
 dispatcher.add_handler(TWRP_HANDLER)
-dispatcher.add_handler(OFOX_HANDLER)
+# dispatcher.add_handler(OFOX_HANDLER)
 dispatcher.add_handler(SHRP_HANDLER)
 dispatcher.add_handler(BLISS_HANDLER)
 dispatcher.add_handler(HAVOC_HANDLER)
