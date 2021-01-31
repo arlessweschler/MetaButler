@@ -1,51 +1,47 @@
-import html
-import PIL
-import traceback
-from contextlib import redirect_stdout
-from typing import Optional, List
-import urbandict
-import pyowm
-from pyowm import timeutils, exceptions
-import wikipedia
+import asyncio
 import base64
-from bs4 import BeautifulSoup
-
-import sys
-import inspect
-import os
-import shutil
-import glob
-import math
-import textwrap
-import os
-import requests
-import json
-import gc
 import datetime
+import gc
+import glob
+import html
+import inspect
+import io
+import json
+import math
+import os
+import random
+import re
+import shutil
+import subprocess
+import sys
+import textwrap
 import time
 import traceback
-import re
-import io
-import asyncio
-import random
-import subprocess
 import urllib
+from contextlib import redirect_stdout
+from typing import List, Optional
+
+import PIL
 import psutil
-
-from typing import Optional, List
-from telegram.error import BadRequest, Unauthorized
-from telegram import Message, Chat, Update, Bot, MessageEntity
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import CommandHandler, run_async, Filters, MessageHandler
-from telegram.utils.helpers import escape_markdown, mention_html, mention_markdown
-
-from metabutler import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, WHITELIST_USERS, LOGGER
+import pyowm
+import requests
+import urbandict
+import wikipedia
+from bs4 import BeautifulSoup
+from metabutler import (LOGGER, OWNER_ID, SUDO_USERS, SUPPORT_USERS,
+                        WHITELIST_USERS, dispatcher)
 from metabutler.__main__ import STATS, USER_INFO
 from metabutler.modules.disable import DisableAbleCommandHandler
+from metabutler.modules.helper_funcs.alternate import send_message
 from metabutler.modules.helper_funcs.extraction import extract_user
 from metabutler.modules.helper_funcs.filters import CustomFilters
-
-from metabutler.modules.helper_funcs.alternate import send_message
+from pyowm import exceptions, timeutils
+from telegram import (Bot, Chat, InlineKeyboardButton, InlineKeyboardMarkup,
+                      Message, MessageEntity, ParseMode, Update)
+from telegram.error import BadRequest, Unauthorized
+from telegram.ext import CommandHandler, Filters, MessageHandler, run_async
+from telegram.utils.helpers import (escape_markdown, mention_html,
+                                    mention_markdown)
 from telegraph import Telegraph, upload_file
 
 BASE_URL = 'https://del.dog'
