@@ -406,6 +406,12 @@ def github(update, context):
                 reply_text += f"*Followers:* `{response_url.get('followers')}`\n"
             if response_url.get('following'):
                 reply_text += f"*Following:* `{response_url.get('following')}`\n"
+            if response_url.get('created_at'):
+                created_date = datetime.strptime(response_url.get('created_at'), '%Y-%m-%dT%H:%M:%SZ')
+                reply_text += f"*Account Created At:* `{created_date}`\n"
+            if response_url.get('updated_at'):
+                updated_date = datetime.strptime(response_url.get('updated_at'), '%Y-%m-%dT%H:%M:%SZ')
+                reply_text += f"*Account Updated At:* `{updated_date}`\n"
             
             if photo_url:
                 message.reply_photo(photo_url, caption=reply_text, parse_mode=ParseMode.MARKDOWN)
